@@ -56,7 +56,7 @@ int main()
         {
             shape.falling = 1;
             //make this pick a random shape
-            shape.form('J');
+            shape.form(shapeGen());
             grid = draw(shape,grid);
             fall_timer.restart();
             can_spawn = false;
