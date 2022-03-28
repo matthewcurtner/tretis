@@ -1,6 +1,7 @@
 #include "functions.cpp"
 int main()
 {
+    int points = 0;
     //flags
     bool can_spawn = 1;
     //clocks
@@ -64,7 +65,7 @@ int main()
         //input REMINDER: Turn this into a function
         //rotating
         if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && rotate_timer.getElapsedTime() > sf::seconds(.1))
-        {
+        { 
             shape.rotate(grid);
             rotate_timer.restart();
         }
@@ -82,7 +83,7 @@ int main()
         }
 
         //falling
-        if(fall_timer.getElapsedTime() > sf::seconds(1) && shape.falling)
+        if(fall_timer.getElapsedTime() > sf::seconds(.2) && shape.falling)
         {
             shape.move(shape.getPos().x, shape.getPos().y + 1, grid);
             fall_timer.restart();
@@ -105,11 +106,63 @@ int main()
             }
         }
         //checks if the shape is done moving (the timer allows the player to move the shape for a certain amount of time before it stops)
-        if(!shape.falling && fall_timer.getElapsedTime() > sf::seconds(2))
+        if(!shape.falling && fall_timer.getElapsedTime() > sf::seconds(1.3))
         {
+            
             grid = shed(grid);
+            //removes lines if they are filled out, perhaps make this a function.
+            int lines = 0;
+            int newpoints = 0;
+            for(int y = 0; y < grid.size(); y++)
+            {
+                
+                int shapes = 0;
+                for(int x = 0; x < grid[y].size(); x++)
+                {
+                    if(grid[y][x] == 2)
+                    {
+                        shapes += grid[y][x];
+                    }
+                }
+                if(shapes == 20)
+                {
+                    newpoints += 12;
+                    for(int bx = 0; bx < grid[y].size(); bx++)
+                    {
+                        if(grid[y][bx] == 2)
+                        {
+                            grid[y][bx] = 0;
+                        }
+                    }
+                    for(int ay = y; ay > 0; ay--)
+                    {
+                        grid[ay] = grid[ay-1];
+                    }
+                }
+            
+            }
+            if(lines >= 4)
+            {
+                newpoints *= 4;
+            }
+            points += newpoints;
             can_spawn = true;
         }
+
+        //checks if you lost the game
+        for(int x = 0; x < grid[0].size();x++)
+        {
+            if (grid[0][x] == 2)
+            {
+                window.clear();
+                //put a losing screen here
+                window.close();
+
+                std::cout << "Total points: " << points << '\n';
+                return 0;
+            }
+        }
+
         //Print to terminal
         for(int y = 0; y < grid.size();y++)
         {
